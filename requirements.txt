@@ -6,7 +6,7 @@ Werkzeug
 numpy
 scipy
 nltk
-scikit-learn
+scikit-learn==1.3.2
 pandas
 beautifulsoup4
 jsonschema
