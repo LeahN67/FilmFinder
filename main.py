@@ -54,7 +54,8 @@ def get_suggestions():
     data = pd.read_csv('./data/main_data.csv')
     return list(data['movie_title'].str.capitalize())
 
-app = Flask(__name__)
+#app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 @app.route("/")
 @app.route("/home")
@@ -149,4 +150,5 @@ def recommend():
         movie_cards=movie_cards,reviews=movie_reviews,casts=casts,cast_details=cast_details)
 
 if __name__ == '__main__':
+    
     app.run(debug=True)
