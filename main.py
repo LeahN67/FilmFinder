@@ -11,14 +11,23 @@ import pickle
 import requests
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+
 # Load the NLP model and TFIDF vectorizer from disk
 filename = './models/nlp_model.pkl'
 clf = pickle.load(open(filename, 'rb'))
 vectorizer = pickle.load(open('./models/tranform.pkl', 'rb'))
 
 def create_similarity():
+    """
+    Create a similarity matrix for movie recommendations.
+    
+    Returns:
+    - data: DataFrame containing movie information
+    - similarity: Cosine similarity matrix
+    """
     data = pd.read_csv('./data/main_data.csv')
     # Creating a count matrix
     cv = CountVectorizer()
@@ -28,6 +37,15 @@ def create_similarity():
     return data, similarity
 
 def rcmd(m):
+    """
+    Generate movie recommendations based on a given movie title.
+    
+    Args:
+    - m: Movie title (string)
+    
+    Returns:
+    - List of recommended movie titles or error message
+    """
     m = m.lower()
     try:
         data.head()
@@ -45,25 +63,47 @@ def rcmd(m):
         return l
 
 def convert_to_list(my_list):
+    """
+    Convert a string representation of a list to an actual list.
+    
+    Args:
+    - my_list: String representation of a list
+    
+    Returns:
+    - Converted list
+    """
     my_list = my_list.split('","')
     my_list[0] = my_list[0].replace('["', '')
     my_list[-1] = my_list[-1].replace('"]', '')
     return my_list
 
 def get_suggestions():
+    """
+    Get a list of all movie titles for autocomplete suggestions.
+    
+    Returns:
+    - List of capitalized movie titles
+    """
     data = pd.read_csv('./data/main_data.csv')
     return list(data['movie_title'].str.capitalize())
 
+# Initialize Flask app
 app = Flask(__name__, static_folder='static')
 
 @app.route("/")
 @app.route("/home")
 def home():
+    """
+    Render the home page with movie suggestions.
+    """
     suggestions = get_suggestions()
     return render_template('home.html', suggestions=suggestions, api_key=TMDB_API_KEY)
 
 @app.route("/similarity", methods=["POST"])
 def similarity():
+    """
+    Generate movie recommendations based on user input.
+    """
     movie = request.form['name']
     rc = rcmd(movie)
     if isinstance(rc, str):
@@ -74,6 +114,9 @@ def similarity():
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
+    """
+    Process movie details and render the recommendation page.
+    """
     # Get data from AJAX request
     title = request.form['title']
     cast_ids = request.form['cast_ids']
