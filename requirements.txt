@@ -16,3 +16,4 @@ urllib3
 requests
 pickleshare
 python-dotenv
+streamlit
